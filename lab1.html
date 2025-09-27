@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        #thenum {
+            background-color: yellow;
+            color: red;
+            font-weight: bold;
+            text-align: center;
+            width: 400px;
+            padding: 10px;
+        }
+
+        #buttons {
+            padding: 10px;
+            text-align: center;
+            width: 400px;
+        }
+
+        #buttons button {
+            background-color: blue;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="thenum">
+        <p id="numtext">0</p>
+    </div>
+    <div id="buttons">
+        <button id="startbtn">시작</button>
+        <button id="stopbtn">중지</button>
+    </div>
+
+</body>
+
+</html>
+
+<script>
+    var numtext = document.getElementById("numtext");
+    var startbtn = document.getElementById("startbtn");
+    var stopbtn = document.getElementById("stopbtn")
+
+    var countnum = 0;
+    var counton = null;
+
+    startbtn.addEventListener("click", timeup);
+    stopbtn.addEventListener("click", stopcount);
+
+    function timeup() {
+        if (counton == null) {
+            numtext.textContent = countnum;
+            counton = setInterval(() => {
+                countnum += 1;
+                numtext.textContent = countnum;
+            }, 1000);
+        }
+
+    }
+    function stopcount() {
+        clearInterval(counton);
+        countnum = 0;
+        counton = null;
+    }
+</script>

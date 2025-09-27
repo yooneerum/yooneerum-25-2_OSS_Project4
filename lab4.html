@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Page Title</title>
+
+    <style>
+        input {
+            width: 40px;
+        }
+
+        ul {
+            background-color: rgb(246, 255, 205);
+            max-width: 500px;
+            min-height: 100px;
+            padding-left: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <button id="getbtn" type="button">학생데이터 가져오기</button><br>
+        <input type="text" id="id" placeholder="id">
+        <input type="text" id="name" placeholder="name">
+        <input type="text" id="age" placeholder="age">
+        <input type="text" id="major" placeholder="major">
+        <button id="postbtn" type="button">학생데이터 추가</button>
+        <button id="editbtn" type="button">학생데이터 수정</button>
+        <button id="deletebtn" type="button">학생데이터 삭제</button>
+    </div>
+    <ul id="contents"></ul>
+
+</body>
+
+</html>
+
+<script>
+    document.getElementById("getbtn").addEventListener("click", function (e) {
+        e.preventDefault();
+        getData();
+    });
+    document.getElementById("postbtn").addEventListener("click", function (e) {
+        e.preventDefault();
+        postData();
+    });
+    document.getElementById("editbtn").addEventListener("click", function (e) {
+        e.preventDefault();
+        let id = document.getElementById("id").value;
+        let name = document.getElementById("name").value;
+        let age = document.getElementById("age").value;
+        let major = document.getElementById("major").value;
+        updateData(id, name, age, major);
+    });
+    document.getElementById("deletebtn").addEventListener("click", function (e) {
+        e.preventDefault();
+        let id = document.getElementById("id").value;
+        deleteData(id);
+    });
+
+    function getData() {
+        let contents = document.getElementById("contents")
+        const xhr = new XMLHttpRequest();
+
+        xhr.open("GET", "http://localhost:3001/students");
+        xhr.setRequestHeader("content-type", "application/json");
+        xhr.send();
+
+        xhr.onload = () => {
+            if (xhr.status === 200) {
+                const res = JSON.parse(xhr.response);
+                contents.innerHTML = makeList(res);
+            }
+            else {
+                console.log(xhr.status, xhr.statusText);
+            }
+        }
+    }
+
+    function makeList(data) {
+        let str = "<ul>";
+        for (key in data) {
+            str += "<li> Student" + data[key].id + "_" + "name / age / major : " + data[key].name + " / " + data[key].age + " / " + data[key].major + "</li>";
+        }
+        str += "</ul>";
+        return str;
+    }
+
+    function postData() {
+        let id = document.getElementById("id").value ;
+        let name = document.getElementById("name").value ;
+        let age = document.getElementById("age").value ;
+        let major = document.getElementById("major").value ;
+
+        const checkXhr = new XMLHttpRequest();
+        checkXhr.open("GET", "http://localhost:3001/students/" + id);
+        checkXhr.send();
+
+        checkXhr.onload = () => {
+            if (checkXhr.status === 200) {
+                alert("이미 존재하는 ID입니다!");
+            } else {
+                const xhr = new XMLHttpRequest();
+                xhr.open("POST", "http://localhost:3001/students");
+                xhr.setRequestHeader("content-type", "application/json;charset=UTF-8");
+                const data = { id: id, name: name, age: age, major: major };
+
+                xhr.send(JSON.stringify(data));
+                xhr.onload = () => {
+                    if (xhr.status == 201) {
+                        id = "";
+                        name = "";
+                        age = "";
+                        major = "";
+                        const res = JSON.parse(xhr.response);
+                        console.log(res);
+                        getData();
+                    }
+                    else {
+                        console.log(xhr.status, xhr.statusText);
+                    }
+                }
+            }
+        }
+    }
+
+    function updateData(theid, thename, theage, themajor) {
+        if (!theid) {
+            alert("수정하고 싶은 데이터의 ID를 입력해주세요!");
+            return;
+        }
+
+        const checkXhr = new XMLHttpRequest();
+        checkXhr.open("GET", "http://localhost:3001/students/" + theid);
+        checkXhr.send();
+
+        checkXhr.onload = () => {
+            if (checkXhr.status === 200) {
+                const existing = JSON.parse(checkXhr.response);
+
+                const data = {
+                    id: theid,
+                    name: thename || existing.name,
+                    age: theage || existing.age,
+                    major: themajor || existing.major
+                };
+
+                const xhr = new XMLHttpRequest();
+                xhr.open("PUT", "http://localhost:3001/students/" + theid);
+                xhr.setRequestHeader("content-type", "application/json;charset=UTF-8");
+                xhr.send(JSON.stringify(data));
+
+                xhr.onload = () => {
+                    if (xhr.status == 200) {
+                        const res = JSON.parse(xhr.response);
+                        console.log(res);
+                        document.getElementById("id").value = "";
+                        document.getElementById("name").value = "";
+                        document.getElementById("age").value = "";
+                        document.getElementById("major").value = "";
+                        getData();
+                    }
+                    else {
+                        console.log(xhr.status, xhr.statusText);
+                    }
+                }
+            }
+            else {
+                alert("존재하지 않는 ID입니다!");
+            }
+        }
+    }
+
+    function deleteData(theid) {
+        if (!theid) {
+            alert("삭제하고 싶은 데이터의 ID를 입력해주세요!");
+            return;
+        }
+
+        const checkXhr = new XMLHttpRequest();
+        checkXhr.open("GET", "http://localhost:3001/students/" + theid);
+        checkXhr.send();
+
+        checkXhr.onload = () => {
+            if (checkXhr.status === 200) {
+                const xhr = new XMLHttpRequest();
+                xhr.open("DELETE", "http://localhost:3001/students/" + theid);
+                xhr.setRequestHeader("content-type", "application/json;charset=UTF-8");
+                xhr.send();
+
+                xhr.onload = () => {
+                    if (xhr.status == 200) {
+                        const res = JSON.parse(xhr.response);
+                        console.log(res);
+                        document.getElementById("id").value = "";
+                        document.getElementById("name").value = "";
+                        document.getElementById("age").value = "";
+                        document.getElementById("major").value = "";
+                        getData();
+                    }
+                    else {
+                        console.log(xhr.status, xhr.statusText);
+                    }
+                }
+            }
+            else {
+                alert("존재하지 않는 ID입니다!");
+            }
+        }
+    }
+</script>

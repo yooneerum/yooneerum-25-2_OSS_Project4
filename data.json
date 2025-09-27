@@ -1,0 +1,22 @@
+{
+  "students": [
+    {
+      "id": "1",
+      "name": "Jerry",
+      "age": 20,
+      "major": "Counseling Psychology"
+    },
+    {
+      "id": "2",
+      "name": "Tom",
+      "age": 25,
+      "major": "Computer Sience"
+    },
+    {
+      "id": "3",
+      "name": "Mary",
+      "age": 22,
+      "major": "Math"
+    }
+  ]
+}

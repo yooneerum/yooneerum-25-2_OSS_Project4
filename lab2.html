@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>Alert only for the first visiting!</h1>
+
+    <script>
+        console.log("현재 페이지 경로 : ", location.pathname);
+
+        if (!localStorage.getItem("hasVisited")) {
+            alert("첫 방문을 환영합니다!");
+            localStorage.setItem("hasVisited", "true");
+        }
+        else {
+            console.log("이미 방문한 사용자입니다.")
+        }
+
+    </script>
+</body>
+
+</html>
